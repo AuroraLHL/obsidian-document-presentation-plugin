@@ -4,7 +4,7 @@
   "version": "0.3.0",
   "minAppVersion": "1.5.0",
   "description": "Present a Markdown note as a fullscreen document with adaptive width and presentation-friendly typography",
-  "author": "Razum",
-  "authorUrl": "https://github.com/Razumihin",
+  "author": "AuroraLHL",
+  "authorUrl": "https://github.com/AuroraLHL",
   "isDesktopOnly": false
 }
