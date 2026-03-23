@@ -40,19 +40,19 @@ Instead of turning a note into slides, the plugin keeps the note as a single scr
 4. Copy `main.js`, `manifest.json`, and `styles.css` into your vault at:
 
 ```text
-.obsidian/plugins/document-presentation-plugin
+.obsidian/plugins/document-presentation
 ```
 
 5. Reload Obsidian or restart the app.
 
 ## Migration Note
 
-Community release builds use the plugin id `document-presentation-plugin`.
+Community release builds use the plugin id `document-presentation`.
 
-If you previously installed an earlier compatibility build under `obsidian-fullscreen-plugin` or `obsidian-document-presentation-plugin`, remove the old plugin folder and install the community release into the new folder:
+If you previously installed an earlier compatibility build under `obsidian-fullscreen-plugin`, `obsidian-document-presentation-plugin`, or `document-presentation-plugin`, remove the old plugin folder and install the community release into the new folder:
 
 ```text
-.obsidian/plugins/document-presentation-plugin
+.obsidian/plugins/document-presentation
 ```
 
 ## Development

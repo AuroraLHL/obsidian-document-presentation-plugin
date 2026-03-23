@@ -1,9 +1,9 @@
 {
-  "id": "document-presentation-plugin",
+  "id": "document-presentation",
   "name": "Document Presentation Mode",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "minAppVersion": "1.5.0",
-  "description": "Present a Markdown note as a fullscreen document with adaptive width and presentation-friendly typography",
+  "description": "Present a Markdown note as a fullscreen document with adaptive width and presentation-friendly typography.",
   "author": "AuroraLHL",
   "authorUrl": "https://github.com/AuroraLHL",
   "isDesktopOnly": false
