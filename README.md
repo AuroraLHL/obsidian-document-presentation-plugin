@@ -11,7 +11,6 @@ Instead of turning a note into slides, the plugin keeps the note as a single scr
 - Increase typography scale for headings and body copy
 - Hide sidebars, tab headers, and the status bar while presenting
 - Keep a non-fullscreen document presentation layout for quick preview
-- Preserve existing installations by keeping the internal plugin id unchanged
 
 ## Commands
 
@@ -41,14 +40,20 @@ Instead of turning a note into slides, the plugin keeps the note as a single scr
 4. Copy `main.js`, `manifest.json`, and `styles.css` into your vault at:
 
 ```text
-.obsidian/plugins/obsidian-fullscreen-plugin
+.obsidian/plugins/obsidian-document-presentation-plugin
 ```
 
 5. Reload Obsidian or restart the app.
 
-## Compatibility Note
+## Migration Note
 
-The project has been renamed, but the internal Obsidian plugin id is still `obsidian-fullscreen-plugin` to avoid breaking existing installs, hotkeys, and local plugin data.
+Community release builds use the plugin id `obsidian-document-presentation-plugin`.
+
+If you previously installed an earlier compatibility build under `obsidian-fullscreen-plugin`, remove the old plugin folder and install the community release into the new folder:
+
+```text
+.obsidian/plugins/obsidian-document-presentation-plugin
+```
 
 ## Development
 
