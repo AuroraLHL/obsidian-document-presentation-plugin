@@ -1,0 +1,10 @@
+{
+  "id": "obsidian-fullscreen-plugin",
+  "name": "Document Presentation Mode",
+  "version": "0.3.0",
+  "minAppVersion": "1.5.0",
+  "description": "Present a Markdown note as a fullscreen document with adaptive width and presentation-friendly typography",
+  "author": "Razum",
+  "authorUrl": "https://github.com/Razumihin",
+  "isDesktopOnly": false
+}
