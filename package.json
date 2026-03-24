@@ -1,6 +1,6 @@
 {
   "name": "obsidian-document-presentation-plugin",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "Present a Markdown note as a fullscreen document with adaptive width and presentation-friendly typography",
   "main": "main.js",
   "scripts": {
