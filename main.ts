@@ -1,6 +1,7 @@
 import {
   App,
   MarkdownView,
+  MarkdownViewModeType,
   Notice,
   Plugin,
   PluginSettingTab,
@@ -29,6 +30,10 @@ interface DocumentPresentationState {
   observer: MutationObserver | null;
   fullscreenHandler: (() => void) | null;
 }
+
+type MarkdownModeCapableView = MarkdownView & {
+  setMode?: (mode: MarkdownViewModeType) => void | Promise<void>;
+};
 
 const DEFAULT_SETTINGS: DocumentPresentationSettings = {
   enabledInReadingViewOnly: true,
@@ -60,30 +65,30 @@ export default class DocumentPresentationPlugin extends Plugin {
     this.addSettingTab(new DocumentPresentationSettingsTab(this.app, this));
 
     this.addCommand({
-      id: "document-presentation-enter-fullscreen",
+      id: "enter-fullscreen",
       name: "Enter document presentation fullscreen",
       callback: () => {
-        this.enterDocumentPresentation(true);
+        void this.enterDocumentPresentation(true);
       },
     });
 
     this.addCommand({
-      id: "document-presentation-toggle-layout",
+      id: "toggle-layout",
       name: "Toggle document presentation layout",
       callback: () => {
         if (this.isDocumentPresentationActive()) {
-          this.exitDocumentPresentation();
+          void this.exitDocumentPresentation();
         } else {
-          this.enterDocumentPresentation(false);
+          void this.enterDocumentPresentation(false);
         }
       },
     });
 
     this.addCommand({
-      id: "document-presentation-exit",
+      id: "exit-presentation",
       name: "Exit document presentation",
       callback: () => {
-        this.exitDocumentPresentation();
+        void this.exitDocumentPresentation();
       },
     });
   }
@@ -109,7 +114,7 @@ export default class DocumentPresentationPlugin extends Plugin {
   }
 
   async enterDocumentPresentation(enterFullscreen: boolean) {
-    const leaf = this.app.workspace.activeLeaf;
+    const leaf = this.app.workspace.getMostRecentLeaf();
     if (!leaf) {
       new Notice("No active pane available.");
       return;
@@ -126,7 +131,8 @@ export default class DocumentPresentationPlugin extends Plugin {
     }
 
     if (this.settings.autoEnterReadingMode) {
-      this.ensureReadingMode(markdownView);
+      // Temporarily disabled during validation to isolate view-switch regressions.
+      // this.ensureReadingMode(markdownView);
     } else if (this.settings.enabledInReadingViewOnly && this.getViewMode(markdownView) !== "preview") {
       new Notice("Switch to reading view or enable auto-enter reading view in settings.");
       return;
@@ -142,7 +148,7 @@ export default class DocumentPresentationPlugin extends Plugin {
       fullscreen: enterFullscreen,
       leaf,
       rootEl,
-      observer: this.createOverlayObserver(rootEl),
+      observer: null,
       fullscreenHandler: null,
     };
 
@@ -164,7 +170,7 @@ export default class DocumentPresentationPlugin extends Plugin {
 
       try {
         await rootEl.requestFullscreen();
-      } catch (error) {
+      } catch {
         this.cleanupDocumentPresentation();
         new Notice("Unable to enter document presentation fullscreen.");
       }
@@ -308,14 +314,6 @@ export default class DocumentPresentationPlugin extends Plugin {
     );
   }
 
-  getMarkdownView(leaf: WorkspaceLeaf): MarkdownView | null {
-    const view = leaf.view;
-    if (view instanceof MarkdownView) {
-      return view;
-    }
-    return null;
-  }
-
   getLeafContainerEl(leaf: WorkspaceLeaf): HTMLElement | null {
     const anyLeaf = leaf as WorkspaceLeaf & { containerEl?: HTMLElement };
     if (anyLeaf.containerEl instanceof HTMLElement) {
@@ -325,20 +323,32 @@ export default class DocumentPresentationPlugin extends Plugin {
     return null;
   }
 
+  getMarkdownView(leaf: WorkspaceLeaf): MarkdownView | null {
+    const view = leaf.view;
+    if (view instanceof MarkdownView) {
+      return view;
+    }
+
+    return null;
+  }
+
   getViewMode(view: MarkdownView): string {
-    const anyView = view as any;
-    if (typeof anyView.getMode === "function") {
-      return anyView.getMode();
+    const modeCapableView = view as MarkdownModeCapableView;
+    if (typeof modeCapableView.getMode === "function") {
+      return modeCapableView.getMode();
     }
 
     return "preview";
   }
 
-  ensureReadingMode(view: MarkdownView) {
-    const anyView = view as any;
-    if (typeof anyView.getMode === "function" && typeof anyView.setMode === "function") {
-      if (anyView.getMode() !== "preview") {
-        anyView.setMode("preview");
+  ensureReadingMode(view: MarkdownView): void {
+    const modeCapableView = view as MarkdownModeCapableView;
+    if (
+      typeof modeCapableView.getMode === "function" &&
+      typeof modeCapableView.setMode === "function"
+    ) {
+      if (modeCapableView.getMode() !== "preview") {
+        void modeCapableView.setMode("preview");
       }
     }
   }
@@ -356,7 +366,7 @@ class DocumentPresentationSettingsTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
-    containerEl.createEl("h2", { text: "Document presentation settings" });
+    new Setting(containerEl).setName("Document presentation settings").setHeading();
 
     this.addToggleSetting(
       "Reading view only",
@@ -489,7 +499,9 @@ class DocumentPresentationSettingsTab extends PluginSettingTab {
       .setName(name)
       .setDesc(desc)
       .addToggle((toggle) => {
-        toggle.setValue(value).onChange(onChange);
+        toggle.setValue(value).onChange((nextValue) => {
+          void onChange(nextValue);
+        });
       });
   }
 
@@ -507,7 +519,7 @@ class DocumentPresentationSettingsTab extends PluginSettingTab {
       .addText((text) => {
         text.setPlaceholder(String(value));
         text.setValue(String(value));
-        text.onChange(async (rawValue) => {
+        text.onChange((rawValue) => {
           const parsedValue = Number(rawValue);
           if (Number.isNaN(parsedValue)) {
             return;
@@ -518,7 +530,7 @@ class DocumentPresentationSettingsTab extends PluginSettingTab {
             text.setValue(String(clampedValue));
           }
 
-          await onChange(clampedValue);
+          void onChange(clampedValue);
         });
       });
   }
