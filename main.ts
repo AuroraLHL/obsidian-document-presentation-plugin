@@ -134,7 +134,7 @@ export default class DocumentPresentationPlugin extends Plugin {
       // Temporarily disabled during validation to isolate view-switch regressions.
       // this.ensureReadingMode(markdownView);
     } else if (this.settings.enabledInReadingViewOnly && this.getViewMode(markdownView) !== "preview") {
-      new Notice("Switch to reading view or enable auto-enter reading view in settings.");
+      new Notice("Switch to reading view or enable auto-enter reading view in the plugin options.");
       return;
     }
 
@@ -366,7 +366,7 @@ class DocumentPresentationSettingsTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
-    new Setting(containerEl).setName("Document presentation settings").setHeading();
+    new Setting(containerEl).setName("Document presentation").setHeading();
 
     this.addToggleSetting(
       "Reading view only",
